@@ -5,6 +5,8 @@
  */
 package edu.eci.arsw.primefinder;
 
+import java.util.Scanner;
+
 /**
  *
  */
@@ -24,10 +26,10 @@ public class Control extends Thread {
 
         int i;
         for(i = 0;i < NTHREADS - 1; i++) {
-            PrimeFinderThread elem = new PrimeFinderThread(i*NDATA, (i+1)*NDATA);
+            PrimeFinderThread elem = new PrimeFinderThread(i*NDATA, (i+1)*NDATA, this);
             pft[i] = elem;
         }
-        pft[i] = new PrimeFinderThread(i*NDATA, MAXVALUE + 1);
+        pft[i] = new PrimeFinderThread(i*NDATA, MAXVALUE + 1, this);
     }
     
     public static Control newControl() {
@@ -39,6 +41,34 @@ public class Control extends Thread {
         for(int i = 0;i < NTHREADS;i++ ) {
             pft[i].start();
         }
+
+        try {
+            while(true) {
+                this.sleep(TMILISECONDS);
+                
+                PrimeFinderThread.setMustWait(true);
+
+                for (PrimeFinderThread primeFinderThread : pft)
+
+                    if(!primeFinderThread.isInterrupted())
+                        this.sleep(20);
+
+                System.out.println("Amount of primes found is: " + PrimeFinderThread.getCounter());
+                new Scanner(System.in).nextLine();
+            
+                PrimeFinderThread.setMustWait(false);
+                synchronized(this) {
+                    this.notifyAll();
+                }
+                                
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
+
+        
+
     }
     
 }

@@ -7,14 +7,17 @@ public class PrimeFinderThread extends Thread{
 
 	
 	int a,b;
-	
 	private List<Integer> primes;
-	
-	public PrimeFinderThread(int a, int b) {
+    private static Integer counter = 0;
+    private static boolean mustWait = false;
+    private Control control;
+
+	public PrimeFinderThread(int a, int b, Control control) {
 		super();
                 this.primes = new LinkedList<>();
 		this.a = a;
 		this.b = b;
+        this.control = control;
 	}
 
         @Override
@@ -22,7 +25,29 @@ public class PrimeFinderThread extends Thread{
             for (int i= a;i < b;i++){						
                 if (isPrime(i)){
                     primes.add(i);
+
+                    synchronized(counter) {
+                        counter++;
+                    }
+
                     System.out.println(i);
+
+                    try {
+                        
+                        if(mustWait) {
+
+                            synchronized (control) {
+                                control.wait();
+                            }
+
+                        }
+                            
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                        System.exit(0);
+                    }
+                    
+
                 }
             }
 	}
@@ -44,4 +69,12 @@ public class PrimeFinderThread extends Thread{
 		return primes;
 	}
 	
+    public static Integer getCounter() {
+        return counter;
+    }
+
+    public static void setMustWait(boolean mustWait) {
+        PrimeFinderThread.mustWait = mustWait;
+    }
+
 }
