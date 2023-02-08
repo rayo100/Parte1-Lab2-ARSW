@@ -31,23 +31,17 @@ public class PrimeFinderThread extends Thread{
                     }
 
                     System.out.println(i);
-
+                    
                     try {
-                        
                         if(mustWait) {
-
                             synchronized (control) {
                                 control.wait();
                             }
-
-                        }
-                            
+                        }   
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         System.exit(0);
                     }
-                    
-
                 }
             }
 	}

@@ -66,9 +66,5 @@ public class Control extends Thread {
             ex.printStackTrace();
             System.exit(0);
         }
-
-        
-
     }
-    
 }
